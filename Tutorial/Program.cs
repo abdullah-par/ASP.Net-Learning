@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 var builder = WebApplication.CreateBuilder(args); // this line setsup and create the kestral server 
 
 var app = builder.Build(); //generates the instance of the web application
@@ -28,6 +30,19 @@ app.Run(async (HttpContext context) =>
         }
         
     }
+    else if (context.Request.Method == "POST") {
+        if (context.Request.Path.StartsWithSegments("/Students"))
+        {
+            using var reader = new StreamReader(context.Request.Body);
+            // body variable containing JSON data sent.
+            var body = await reader.ReadToEndAsync();
+            // Deserialize converts a JSON string into an object (here class(Student))
+            //JsonSerializer : handles JSON operations
+            //<Student> : is generic type parameter
+            var student  = JsonSerializer.Deserialize<Student>(body);
+            StudentsRepository.AddStudent(student);
+        }
+    }
     
 });
 
@@ -46,6 +61,7 @@ static class StudentsRepository
     };
     // => is called an expression-bodied member. It is a concise way to define a method that consists of a single expression. In this case, the GetStudents method returns the students list directly without needing a block of code. 
     public static List<Student> GetStudents() => students;
+    public static void AddStudent(Student student) { students.Add(student); }
 }
 class Student
 {
