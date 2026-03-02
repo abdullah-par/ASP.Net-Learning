@@ -9,7 +9,7 @@ app.MapGet("/", () => $"Hello World! this is {name} learning ASP.Net");
 app.Run(async (HttpContext context) =>
 {
     if (context.Request.Method == "GET") {
-        if(context.Request.Path.StartsWithSegments("/"))
+        if(context.Request.Path =="/")
         {
             await context.Response.WriteAsync($"The Method is {context.Request.Method}");
             await context.Response.WriteAsync($"The Path is {context.Request.Path}");
