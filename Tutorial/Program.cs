@@ -83,6 +83,7 @@ static class StudentsRepository
     };
     // => is called an expression-bodied member. It is a concise way to define a method that consists of a single expression. In this case, the GetStudents method returns the students list directly without needing a block of code. 
     public static List<Student> GetStudents() => students;
+    //? is called a nullable reference type. It indicates that the student parameter can be null. This allows for better handling of null values and helps prevent null reference exceptions. In this case, if a null student is passed to the AddStudent method, it will simply not be added to the students list.
     public static void AddStudent(Student? student) {
         if (student is not null) students.Add(student);
     }
