@@ -43,7 +43,29 @@ app.Run(async (HttpContext context) =>
             StudentsRepository.AddStudent(student);
         }
     }
-    
+    else if (context.Request.Method == "PUT")
+    {
+        if (context.Request.Path.StartsWithSegments("/Students"))
+        {
+            using var reader = new StreamReader(context.Request.Body);
+            // body variable containing JSON data sent.
+            var body = await reader.ReadToEndAsync();
+            // Deserialize converts a JSON string into an object (here class(Student))
+            //JsonSerializer : handles JSON operations
+            //<Student> : is generic type parameter
+            var student = JsonSerializer.Deserialize<Student>(body);
+            var result = StudentsRepository.UpdateStudent(student);
+            if (result)
+            {
+                await context.Response.WriteAsync($"Student updated succesfully");
+                
+            }else
+            {
+                await context.Response.WriteAsync($"Student not found");
+            }
+        }
+    }
+
 });
 
 app.Run();// runs the application and starts listening for incoming HTTP requests.(starts the kestral server)
@@ -61,7 +83,23 @@ static class StudentsRepository
     };
     // => is called an expression-bodied member. It is a concise way to define a method that consists of a single expression. In this case, the GetStudents method returns the students list directly without needing a block of code. 
     public static List<Student> GetStudents() => students;
-    public static void AddStudent(Student student) { students.Add(student); }
+    public static void AddStudent(Student? student) {
+        if (student is not null) students.Add(student);
+    }
+    public static bool UpdateStudent(Student? student)
+    {
+        if(student is not null)
+        {
+            var stu = students.FirstOrDefault(s => s.Id == student.Id);
+            if (stu is not null)
+            {
+                stu.Name = student.Name;
+                stu.Branch = student.Branch;
+                return true;
+            }
+        }
+        return false;
+    }
 }
 class Student
 {
